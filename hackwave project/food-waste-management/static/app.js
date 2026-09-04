@@ -665,10 +665,23 @@ function acceptProductionPlan() {
   showToast('Production Plan #884 Dispatched to Kitchen Display System!', 'check_circle');
 }
 
-function triggerRedistribution() {
+async function triggerRedistribution() {
   const selected = document.querySelector('input[name="redistribution_route"]:checked');
   const routeVal = selected ? selected.value.toUpperCase() : 'NGO';
-  showToast(`Surplus dispatch triggered via route: [${routeVal}] for 32 meals.`, 'send');
+  const portions = currentState?.surplus_dispatch?.reduce((total, item) => total + (item.surplus_portions || 0), 0) || 32;
+  try {
+    const res = await fetch('/api/dispatch/redistribute', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ route: routeVal, portions })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Email delivery failed');
+    showToast(`Surplus dispatch emailed via [${routeVal}] for ${portions} meals.`, 'send');
+  } catch (error) {
+    console.error(error);
+    showToast(`Mail failed: ${error.message}`, 'error');
+  }
 }
 
 function exportBatchSlip() {

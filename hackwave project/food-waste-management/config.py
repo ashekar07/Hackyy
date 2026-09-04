@@ -35,7 +35,17 @@ HOST = os.getenv("HOST", "127.0.0.1")
 PORT = int(os.getenv("PORT", "8000"))
 
 # ---------------------------------------------------------------------------
-# 3. Kitchen Operating Thresholds & Constants
+# 3. Email Notifications
+# ---------------------------------------------------------------------------
+SMTP_HOST = os.getenv("SMTP_HOST", "")
+SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+SMTP_USERNAME = os.getenv("SMTP_USERNAME", "")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
+MANAGER_EMAIL = os.getenv("MANAGER_EMAIL", "")
+SMTP_FROM = os.getenv("SMTP_FROM") or SMTP_USERNAME
+
+# ---------------------------------------------------------------------------
+# 4. Kitchen Operating Thresholds & Constants
 # ---------------------------------------------------------------------------
 # Standard daily diner headcount capacity
 BASELINE_CAMPUS_FOOTFALL = 750

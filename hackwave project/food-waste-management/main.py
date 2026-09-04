@@ -22,6 +22,7 @@ from pydantic import BaseModel
 
 from pipeline import KitchenSynapseEngine, PRESET_SCENARIOS
 from config import HOST, PORT
+from mail_service import send_surplus_notification
 
 app = FastAPI(title="Food Waste Management AI HUD", version="3.0.0")
 
@@ -49,6 +50,10 @@ class OverrideRequest(BaseModel):
 
 class DispatchApproveRequest(BaseModel):
     dispatch_id: str
+
+class RedistributionRequest(BaseModel):
+    route: str = "NGO"
+    portions: int = 0
 
 class FeatherlessConfigRequest(BaseModel):
     api_key: str
@@ -162,6 +167,22 @@ async def approve_dispatch(req: DispatchApproveRequest):
         "state": engine.current_state.model_dump()
     })
     return {"status": "SUCCESS", "dispatch_id": req.dispatch_id}
+
+@app.post("/api/dispatch/redistribute")
+async def redistribute_surplus(req: RedistributionRequest):
+    """Email the configured manager when surplus is sent to a rescue route."""
+    route = req.route.strip().upper() or "NGO"
+    portions = req.portions
+    if portions <= 0 and engine.current_state:
+        portions = sum(item.surplus_portions for item in engine.current_state.surplus_dispatch)
+    try:
+        await send_surplus_notification(route, portions)
+    except Exception as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"success": False, "error": f"Email delivery failed: {exc}"},
+        )
+    return {"success": True, "route": route, "portions": portions}
 
 class DatasetUpdateRequest(BaseModel):
     dataset_type: str  # "recipes", "inventory", or "waste_logs"

@@ -99,3 +99,153 @@ This tests:
 3. Exact mathematical precision for cost and carbon offsets.
 4. Weather drop scenario (Monsoon simulation).
 5. Counter-factual risk calculation when a chef manually overrides AI recommendations.
+
+## System Overview
+
+FoodWise AI combines a FastAPI backend, a browser dashboard, a multi-agent planning pipeline, editable JSON datasets, and SMTP notifications for surplus redistribution.
+
+The planning cycle works as follows:
+
+1. `data_loader.py` loads and normalizes recipes, inventory, and waste logs.
+2. Demand, waste, and inventory agents independently propose portions.
+3. `orchestrator.py` resolves the competing recommendations into a consensus.
+4. `action_agent.py` creates the two-shift preparation plan and surplus channels.
+5. `cost_agent.py` calculates financial and environmental metrics.
+6. The resulting `KitchenState` is returned to the dashboard and streamed through SSE.
+
+The default rules include an 8% demand safety buffer, a 15% high-scrap threshold, a 24-hour expiry alert window, a 65/35 cooking split, 2.5 kg CO2 avoided per kg of food saved, and 13.2 liters of water conserved per kg saved.
+
+## Repository Layout
+
+```text
+hackwave project/
+├── requirements.txt                 Python dependencies
+├── .env                             Local secrets and settings
+└── food-waste-management/
+      ├── main.py                      FastAPI application and HTTP routes
+      ├── config.py                    Environment variables and operating constants
+      ├── pipeline.py                  Multi-agent planning and state orchestration
+      ├── data_loader.py               JSON dataset loading and normalization
+      ├── llm_client.py                Optional Featherless-compatible client
+      ├── mail_service.py              SMTP delivery for surplus notifications
+      ├── test_pipeline.py             Integration verification suite
+      ├── agents/                      Demand, waste, inventory, action, cost, and orchestrator agents
+      ├── models/state.py              Pydantic contracts shared by agents and UI
+      ├── data/                        Recipes, inventory, and waste-log JSON files
+      └── static/                      Dashboard HTML, JavaScript, and CSS
+```
+
+## Quick Start
+
+From the repository root, open PowerShell and run:
+
+```powershell
+cd "hackwave project\food-waste-management"
+python -m pip install -r requirements.txt
+python main.py
+```
+
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000). The server defaults to `127.0.0.1:8000`; set `HOST` and `PORT` in `.env` to change it.
+
+## Configuration
+
+The application loads `hackwave project/.env` automatically. A typical configuration is:
+
+```env
+HOST=127.0.0.1
+PORT=8000
+
+# Optional LLM integration. The local rule engine is used when this is empty.
+API_KEY=your_api_key_here
+LLM_MODEL=meta-llama/Meta-Llama-3.1-8B-Instruct
+LLM_BASE_URL=https://api.featherless.ai/v1
+
+# SMTP notifications for surplus redistribution.
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=your-account@gmail.com
+SMTP_PASSWORD=your-google-app-password
+SMTP_FROM=your-account@gmail.com
+MANAGER_EMAIL=manager@example.com
+```
+
+For Gmail, enable two-step verification and use a Google App Password for `SMTP_PASSWORD`, not the normal account password. Keep `.env` local and never publish API keys or SMTP credentials.
+
+## HTTP API
+
+| Method | Route | Purpose |
+| --- | --- | --- |
+| `GET` | `/` | Serves the dashboard |
+| `GET` | `/api/state` | Returns the current kitchen state |
+| `POST` | `/api/simulate` | Runs a scenario or custom footfall calculation |
+| `POST` | `/api/override` | Applies a chef portion override |
+| `POST` | `/api/override/reset` | Clears chef overrides |
+| `GET` | `/api/events` | Streams updates over Server-Sent Events |
+| `GET` | `/api/dataset` | Returns loaded datasets and counts |
+| `POST` | `/api/dataset/update` | Saves and applies a dataset update |
+| `POST` | `/api/dataset/reload` | Reloads datasets from disk |
+| `GET` | `/api/config/featherless` | Shows LLM configuration status |
+| `POST` | `/api/config/featherless` | Updates and optionally verifies LLM credentials |
+| `POST` | `/api/dispatch/approve` | Marks a surplus item as dispatched |
+| `POST` | `/api/dispatch/redistribute` | Emails the manager about surplus meals |
+
+The dashboard calls these routes automatically. Redistribution email includes the selected route and number of meals. Failed delivery returns HTTP `502` with an error instead of reporting a false success.
+
+## Scenarios
+
+Built-in scenarios are defined in `pipeline.py`:
+
+- `NORMAL`: standard kitchen conditions.
+- `MONSOON`: reduced footfall caused by heavy rain.
+- `EXAM_SURGE`: increased demand during examinations.
+- `CHILLER_FAIL`: cold-storage failure requiring urgent inventory decisions.
+
+Example request:
+
+```powershell
+Invoke-RestMethod -Method Post `
+   -Uri http://127.0.0.1:8000/api/simulate `
+   -ContentType 'application/json' `
+   -Body '{"scenario_id":"MONSOON"}'
+```
+
+## Data Files
+
+Edit the JSON files in `food-waste-management/data/`, then use the dashboard reload control or call `POST /api/dataset/reload`.
+
+- `recipes.json` defines dishes, baseline portions, portion size, ingredients, and unit cost.
+- `inventory.json` defines available stock, lot identifiers, and remaining shelf life.
+- `waste_logs.json` defines historical scrap percentages and waste observations.
+
+Keep the existing field names and JSON structure when adding records so the loader and agents can process them correctly.
+
+## Testing
+
+Run the verification suite from the application directory:
+
+```powershell
+cd "hackwave project\food-waste-management"
+python test_pipeline.py
+```
+
+The suite checks normal planning, agent disagreement, ESG calculations, the monsoon scenario, and chef override risk calculations.
+
+## Troubleshooting
+
+### The dashboard does not load
+
+Confirm the server is running from `food-waste-management` and browse to `http://127.0.0.1:8000`. Check that the selected Python interpreter has the packages from `requirements.txt` installed.
+
+### LLM reasoning is unavailable
+
+The application continues with local rule-based reasoning. Check `API_KEY`, `LLM_BASE_URL`, and the model name only when live LLM reasoning is required.
+
+### Email delivery fails
+
+Check that all SMTP variables are set, the SMTP port is `587`, the account allows authenticated SMTP, and Gmail uses an App Password. The server returns the delivery error in its response.
+
+## Security Notes
+
+- Never commit `.env`, API keys, SMTP passwords, or manager email data.
+- Keep the development server bound to `127.0.0.1` unless network access is intentional.
+- Add authentication and authorization before exposing the API outside a trusted local network.

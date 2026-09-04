@@ -25,7 +25,13 @@ def _send_message(subject: str, body: str) -> None:
 
     with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10) as smtp:
         smtp.starttls()
-        smtp.login(SMTP_USERNAME, SMTP_PASSWORD)
+        try:
+            smtp.login(SMTP_USERNAME, SMTP_PASSWORD)
+        except smtplib.SMTPAuthenticationError as exc:
+            raise RuntimeError(
+                "SMTP authentication failed. For Gmail, use a 16-character "
+                "Google App Password for SMTP_PASSWORD."
+            ) from exc
         smtp.send_message(message)
 
 

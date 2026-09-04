@@ -5,6 +5,9 @@
 fastapi>=0.110.0
 uvicorn>=0.28.0
 
+# Data analysis and CSV processing
+pandas>=2.0.0
+
 # Data modeling and serialization
 pydantic>=2.0.0
 

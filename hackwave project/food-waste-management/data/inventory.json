@@ -1,0 +1,62 @@
+[
+  {
+    "ingredient_id": "ing_paneer",
+    "name": "Fresh Artisanal Paneer",
+    "kg_on_hand": 42.5,
+    "unit_cost_usd": 6.80,
+    "shelf_life_hours_remaining": 14.0,
+    "storage_location": "Chiller #1 - Dairy Rack B",
+    "batch_code": "LOT-PAN-9821",
+    "supplier": "Metro Farmstead Dairy"
+  },
+  {
+    "ingredient_id": "ing_spinach",
+    "name": "Fresh Baby Spinach (Palak)",
+    "kg_on_hand": 28.0,
+    "unit_cost_usd": 2.90,
+    "shelf_life_hours_remaining": 18.5,
+    "storage_location": "Walk-in Cooler - Veg Bay 4",
+    "batch_code": "LOT-SPN-4412",
+    "supplier": "Valley Fresh Organics"
+  },
+  {
+    "ingredient_id": "ing_cream",
+    "name": "Heavy Dairy Cream (35%)",
+    "kg_on_hand": 22.0,
+    "unit_cost_usd": 4.20,
+    "shelf_life_hours_remaining": 21.0,
+    "storage_location": "Chiller #1 - Dairy Rack A",
+    "batch_code": "LOT-CRM-1099",
+    "supplier": "Metro Farmstead Dairy"
+  },
+  {
+    "ingredient_id": "ing_chicken",
+    "name": "Fresh Boneless Chicken Breast",
+    "kg_on_hand": 75.0,
+    "unit_cost_usd": 5.40,
+    "shelf_life_hours_remaining": 36.0,
+    "storage_location": "Meat Chiller #3",
+    "batch_code": "LOT-CHK-8831",
+    "supplier": "Highland Poultry"
+  },
+  {
+    "ingredient_id": "ing_rice",
+    "name": "Premium Aged Basmati Rice",
+    "kg_on_hand": 180.0,
+    "unit_cost_usd": 1.75,
+    "shelf_life_hours_remaining": 720.0,
+    "storage_location": "Dry Pantry - Shelf 02",
+    "batch_code": "LOT-RIC-5501",
+    "supplier": "Global Grain Imports"
+  },
+  {
+    "ingredient_id": "ing_dal",
+    "name": "Yellow Lentils (Toor Dal)",
+    "kg_on_hand": 95.0,
+    "unit_cost_usd": 2.10,
+    "shelf_life_hours_remaining": 600.0,
+    "storage_location": "Dry Pantry - Shelf 04",
+    "batch_code": "LOT-DAL-7721",
+    "supplier": "Global Grain Imports"
+  }
+]

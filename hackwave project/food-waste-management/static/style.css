@@ -1,0 +1,85 @@
+﻿/* Food Waste Management AI - Clean Emerald & Slate Theme (No Purple Gradients) */
+
+:root {
+  --primary: #10b981;              /* Clean Emerald Green */
+  --primary-hover: #059669;
+  --secondary: #0ea5e9;            /* Crisp Sky Blue (Replaced Purple) */
+  --secondary-hover: #0284c7;
+  --tertiary: #f59e0b;             /* Warning Amber */
+  --surface: #0f172a;              /* Deep Slate 900 */
+  --surface-container: #1e293b;    /* Slate 800 */
+  --surface-container-high: #334155; /* Slate 700 */
+  --surface-container-low: #131d31;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+}
+
+/* Custom Clean Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #10b981;
+}
+
+/* Agent Node Active Focus States */
+.agent-card {
+  transition: all 0.2s ease-in-out;
+}
+
+.agent-card:hover {
+  transform: translateY(-2px);
+  border-color: #475569 !important;
+}
+
+.agent-card.agent-active-focus {
+  border-color: #10b981 !important;
+  background-color: #1e293b !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.2) !important;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+/* Smooth Slider Styling */
+input[type=range]::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #10b981;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+  border: 2px solid #0f172a;
+}
+
+/* Table Row Highlights */
+.table-row-selected {
+  background-color: rgba(16, 185, 129, 0.08) !important;
+}
+
+.table-row-high-risk {
+  background-color: rgba(245, 158, 11, 0.08) !important;
+}

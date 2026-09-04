@@ -1,0 +1,43 @@
+{
+  "historical_metrics": {
+    "rec_palak_paneer": {
+      "dish_name": "Velvet Palak Paneer",
+      "avg_scrap_rate_pct": 21.8,
+      "tray_return_scrap_g_per_plate": 48.0,
+      "kitchen_prep_trim_pct": 6.2,
+      "risk_tier": "CRITICAL_SCRAP",
+      "notes": "Consistently rejected by younger hostel cohorts; high plate return after 1:00 PM."
+    },
+    "rec_paneer_makhani": {
+      "dish_name": "Royal Paneer Makhani",
+      "avg_scrap_rate_pct": 16.4,
+      "tray_return_scrap_g_per_plate": 39.0,
+      "kitchen_prep_trim_pct": 4.1,
+      "risk_tier": "HIGH_SCRAP",
+      "notes": "Popular early in service, but excessive batch size leads to dry warming-pan crust waste."
+    },
+    "rec_chicken_biryani": {
+      "dish_name": "Hyderabadi Dum Chicken Biryani",
+      "avg_scrap_rate_pct": 9.8,
+      "tray_return_scrap_g_per_plate": 37.0,
+      "kitchen_prep_trim_pct": 3.0,
+      "risk_tier": "LOW_SCRAP",
+      "notes": "Extremely high sell-through rate; leftovers only occur during heavy rain or exam dips."
+    },
+    "rec_dal_tadka": {
+      "dish_name": "Slow-Simmered Dal Tadka",
+      "avg_scrap_rate_pct": 5.4,
+      "tray_return_scrap_g_per_plate": 11.0,
+      "kitchen_prep_trim_pct": 1.5,
+      "risk_tier": "MINIMAL_SCRAP",
+      "notes": "Low cost staple, minimal waste; easily repurposed into evening lentil soup."
+    }
+  },
+  "tray_scanner_vision_audit": {
+    "latest_scan_timestamp": "Today 12:45 PM",
+    "starch_plate_waste_pct": 26.4,
+    "protein_plate_waste_pct": 3.8,
+    "vegetable_plate_waste_pct": 19.2,
+    "ai_vision_confidence": 0.94
+  }
+}

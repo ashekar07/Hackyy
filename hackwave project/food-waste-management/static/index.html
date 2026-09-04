@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>FoodWise AI // Autonomous Multi-Agent Culinary Intelligence HUD</title>
+  
+  <!-- Material Symbols & Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-dim": "#090d16",
+            "surface-variant": "#1e293b",
+            "primary": "#10b981",
+            "inverse-primary": "#059669",
+            "surface-container": "#131d31",
+            "error": "#ef4444",
+            "tertiary": "#f59e0b",
+            "on-primary": "#ffffff",
+            "on-background": "#f8fafc",
+            "on-secondary-container": "#e0f2fe",
+            "surface-container-high": "#1e293b",
+            "on-surface-variant": "#94a3b8",
+            "outline-variant": "#334155",
+            "on-tertiary-container": "#fef3c7",
+            "on-secondary": "#ffffff",
+            "tertiary-fixed-dim": "#fbbf24",
+            "surface-bright": "#334155",
+            "on-tertiary-fixed": "#451a03",
+            "primary-container": "#064e3b",
+            "on-primary-fixed-variant": "#047857",
+            "surface-container-low": "#0f172a",
+            "primary-fixed-dim": "#34d399",
+            "secondary-fixed-dim": "#38bdf8",
+            "surface-tint": "#10b981",
+            "tertiary-container": "#78350f",
+            "tertiary-fixed": "#fef3c7",
+            "surface": "#0f172a",
+            "on-surface": "#f8fafc",
+            "background": "#0b0f19",
+            "secondary-fixed": "#e0f2fe",
+            "on-secondary-fixed-variant": "#0284c7",
+            "on-primary-fixed": "#064e3b",
+            "primary-fixed": "#a7f3d0",
+            "inverse-surface": "#f8fafc",
+            "on-primary-container": "#a7f3d0",
+            "on-tertiary": "#ffffff",
+            "secondary": "#0ea5e9",
+            "inverse-on-surface": "#0f172a",
+            "error-container": "#7f1d1d",
+            "surface-container-lowest": "#070a12",
+            "secondary-container": "#0369a1",
+            "on-secondary-fixed": "#082f49",
+            "on-error-container": "#fee2e2",
+            "on-error": "#ffffff",
+            "surface-container-highest": "#334155",
+            "outline": "#475569"
+          },
+          fontFamily: {
+            "sans": ["Inter", "sans-serif"],
+            "display": ["Plus Jakarta Sans", "sans-serif"],
+            "mono": ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body class="bg-background font-sans text-on-surface antialiased min-h-screen selection:bg-primary/20 selection:text-primary">
+
+  <!-- LEFT FIXED NAVIGATION SIDEBAR -->
+  <aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest/95 backdrop-blur-xl z-50 flex flex-col justify-between py-4 border-r border-surface-container-highest/30">
+    <div class="flex flex-col gap-4">
+      
+      <!-- Brand & Telemetry Feed Badge -->
+      <div class="px-5 flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-surface-container-high border border-primary/30 flex items-center justify-center shadow-[0_0_15px_rgba(78,222,163,0.15)]">
+          <span class="material-symbols-outlined text-primary text-[22px]">hub</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-bold text-xs text-on-surface tracking-wider uppercase font-display">Telemetry Grid</span>
+          <span class="text-[11px] text-on-surface-variant flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+            Operational Feed
+          </span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="flex flex-col gap-1 px-3">
+        <button onclick="clearAgentFocus()" id="nav-overview" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all bg-primary-container text-on-primary-container font-semibold text-xs text-left">
+          <span class="material-symbols-outlined text-[18px]">dashboard</span>
+          Overview Hub
+        </button>
+        <button onclick="scrollToSection('production-plan')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all text-xs text-left">
+          <span class="material-symbols-outlined text-[18px]">restaurant_menu</span>
+          Production Plan
+        </button>
+        <button onclick="selectAgent('Waste Agent')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all text-xs text-left">
+          <span class="material-symbols-outlined text-[18px]">analytics</span>
+          Waste Analytics
+        </button>
+        <button onclick="selectAgent('Inventory Agent')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all text-xs text-left">
+          <span class="material-symbols-outlined text-[18px]">inventory_2</span>
+          Stock & Storage
+        </button>
+        <button onclick="scrollToSection('surplus-section')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all text-xs text-left">
+          <span class="material-symbols-outlined text-[18px]">volunteer_activism</span>
+          Surplus Redistribution
+        </button>
+        <button onclick="openDatasetModal()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all text-xs text-left">
+          <span class="material-symbols-outlined text-[18px] text-secondary">folder_open</span>
+          User Dataset Files
+        </button>
+        <button onclick="openConfigModal()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all text-xs text-left group">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-[18px] text-tertiary group-hover:rotate-45 transition-transform">tune</span>
+            <span>Node Config (LLM)</span>
+          </div>
+          <span class="w-2 h-2 rounded-full" id="sidebar-featherless-dot"></span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Daily Quota Tracker in Sidebar -->
+    <div class="px-4 flex flex-col gap-3">
+      <div class="bg-surface-container-low p-3.5 rounded-xl border border-surface-container-highest/20 flex flex-col gap-2">
+        <div class="flex items-center justify-between text-[11px]">
+          <span class="text-on-surface-variant uppercase font-medium">Daily Waste Quota</span>
+          <span class="text-primary font-bold" id="sidebar-waste-saved">34% saved</span>
+        </div>
+        <div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+          <div class="h-full bg-primary rounded-full w-2/3 transition-all duration-500" id="sidebar-progress-bar"></div>
+        </div>
+        <span class="text-[10px] text-on-surface-variant" id="sidebar-co2-diverted">46.2 kg CO₂e Diverted</span>
+      </div>
+
+      <!-- Featherless API Badge Button -->
+      <button onclick="openConfigModal()" class="bg-surface-container-high/60 hover:bg-surface-container-high p-2.5 rounded-xl border border-surface-container-highest/30 flex items-center justify-between text-left transition-colors">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-[16px]">key</span>
+          <div class="flex flex-col">
+            <span class="text-[10px] font-bold text-on-surface uppercase tracking-wider">Featherless AI</span>
+            <span class="text-[9px] text-on-surface-variant truncate max-w-[120px]" id="featherless-status-text">Checking...</span>
+          </div>
+        </div>
+        <span class="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-semibold">Config</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN APP CONTAINER (OFFSET BY 256px SIDEBAR) -->
+  <div class="pl-64">
+
+    <!-- TOP HEADER -->
+    <header class="fixed top-0 left-64 right-0 z-40 bg-surface-container-lowest/85 backdrop-blur-xl border-b border-surface-container-highest/20 shadow-sm">
+      <div class="h-16 px-6 flex items-center justify-between">
+        
+        <!-- Left Branding & Nav -->
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2.5 cursor-pointer" onclick="clearAgentFocus()">
+            <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+              <span class="material-symbols-outlined text-[20px]">psychology</span>
+            </div>
+            <span class="font-display font-bold text-lg text-on-surface tracking-tight">FoodWise AI</span>
+          </div>
+          
+          <span class="px-2.5 py-0.5 rounded-full bg-surface-container-high font-medium text-[11px] text-on-surface-variant border border-surface-container-highest/30 hidden sm:inline">
+            Canteen Node #04 - Campus Central
+          </span>
+
+          <nav class="hidden xl:flex items-center gap-1 text-xs">
+            <button onclick="clearAgentFocus()" class="px-3 py-1.5 rounded-lg bg-primary-container text-on-primary-container font-semibold transition-colors">Dashboard</button>
+            <button onclick="scrollToSection('production-plan')" class="px-3 py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">Production Plan</button>
+            <button onclick="selectAgent('Waste Agent')" class="px-3 py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">Waste Analytics</button>
+            <button onclick="selectAgent('Inventory Agent')" class="px-3 py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">Inventory</button>
+            <button onclick="scrollToSection('surplus-section')" class="px-3 py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">Surplus Hub</button>
+            <button onclick="openConfigModal()" class="px-3 py-1.5 rounded-lg text-tertiary hover:bg-surface-container-high transition-colors font-medium">Settings</button>
+          </nav>
+        </div>
+
+        <!-- Right User & Telemetry Profile -->
+        <div class="flex items-center gap-4">
+          <div class="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-surface-container-highest/20">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+            </span>
+            <span class="text-xs text-primary font-medium" id="header-agents-status">Agents Online 6/6</span>
+          </div>
+
+          <span class="hidden md:block text-xs text-on-surface-variant" id="header-clock">Today, 24 Oct</span>
+
+          <!-- User Dataset Modal Trigger -->
+          <button onclick="openDatasetModal()" title="View & Manage User Dataset" class="p-2 rounded-lg bg-surface-container-high hover:bg-surface-bright text-secondary border border-surface-container-highest/30 transition-colors flex items-center gap-1.5 text-xs">
+            <span class="material-symbols-outlined text-[18px] text-secondary">dataset</span>
+            <span class="hidden sm:inline font-mono text-[11px]" id="header-dataset-label">User Dataset</span>
+          </button>
+
+          <!-- Featherless API Key Modal Trigger -->
+          <button onclick="openConfigModal()" title="Configure Featherless API Key" class="p-2 rounded-lg bg-surface-container-high hover:bg-surface-bright text-tertiary border border-surface-container-highest/30 transition-colors flex items-center gap-1.5 text-xs">
+            <span class="material-symbols-outlined text-[18px]">vpn_key</span>
+            <span class="hidden sm:inline font-mono text-[11px]" id="header-key-label">Featherless Key</span>
+          </button>
+
+          <!-- Profile -->
+          <div class="flex items-center gap-2.5 pl-2 border-l border-surface-container-highest/30">
+            <div class="flex flex-col text-right hidden sm:flex">
+              <span class="text-xs font-semibold text-on-surface">Chef Ramesh Kumar</span>
+              <span class="text-[10px] text-on-surface-variant">Head Kitchen Manager</span>
+            </div>
+            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm">
+              <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sub-Bar Telemetry Status -->
+      <div class="h-7 px-6 bg-surface-container-low/95 border-t border-surface-container-highest/10 flex items-center justify-between text-on-surface-variant text-[11px] font-mono">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[14px] text-primary">smart_toy</span>
+          <span>Autonomous Resource Intelligence Pipeline Active</span>
+          <span class="text-surface-container-highest">•</span>
+          <span id="active-llm-badge" class="text-cyan-300">LLM: Featherless.ai</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <span>Latency: <strong class="text-on-surface font-semibold">140ms</strong></span>
+          <span>Sync: <strong class="text-primary font-semibold" id="telemetry-sync-time">Realtime</strong></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main class="w-full pt-[100px] px-6 pb-16 bg-background min-h-screen">
+      <div class="flex flex-col w-full gap-6">
+
+        <!-- TOP HERO WELCOME & ACTION BAR -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 p-5 rounded-2xl bg-surface-container-low border border-surface-container-highest/20 shadow-sm">
+          <div class="flex flex-col gap-1">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container text-xs text-primary font-medium">
+                <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                Lunch Prep Cycle
+              </span>
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container text-xs text-on-surface-variant">
+                <span class="material-symbols-outlined text-[12px] text-primary">sync</span>
+                Pipeline In-Sync
+              </span>
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container text-xs text-on-surface-variant">
+                <span class="material-symbols-outlined text-[12px]">calendar_today</span>
+                College Central Canteen (Block C)
+              </span>
+            </div>
+            <h1 class="font-display text-2xl sm:text-3xl text-on-surface font-bold tracking-tight mt-1">
+              Good Morning, Kitchen Manager
+            </h1>
+            <p class="text-xs sm:text-sm text-on-surface-variant">
+              Multi-agent autonomous production recommendations for today's lunch rush.
+            </p>
+          </div>
+
+          <!-- Right Action Controls -->
+          <div class="flex flex-wrap items-center gap-2.5">
+            <button onclick="exportBatchSlip()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-bright text-on-surface transition-all text-xs font-semibold border border-surface-container-highest/30" id="btn-export-slip" type="button">
+              <span class="material-symbols-outlined text-[18px]">file_download</span>
+              Export Kitchen Batch Slip
+            </button>
+            <button onclick="triggerRunAI()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-fixed text-on-primary font-bold text-xs shadow-[0_0_16px_rgba(78,222,163,0.25)] hover:shadow-[0_0_24px_rgba(78,222,163,0.45)] transition-all active:scale-95" id="btn-run-ai" type="button">
+              <span class="material-symbols-outlined text-[18px]">bolt</span>
+              Run AI Analysis
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 KPI METRIC CARDS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          
+          <!-- Card 1: Expected Footfall -->
+          <div class="flex flex-col justify-between p-5 rounded-2xl bg-surface-container border border-surface-container-highest/20 shadow-sm hover:border-primary/40 transition-colors">
+            <div class="flex items-start justify-between mb-2">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Expected Footfall</span>
+              <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-[20px]">groups</span>
+              </div>
+            </div>
+            <div>
+              <div class="font-display font-extrabold text-2xl sm:text-3xl text-on-surface tracking-tight">
+                <span id="kpi-footfall">420</span> <span class="text-sm font-normal text-on-surface-variant">students</span>
+              </div>
+              <p class="text-xs text-on-surface-variant mt-1">Biometric check-ins & academic schedule</p>
+            </div>
+            <div class="mt-4 pt-2 border-t border-surface-container-highest/20 flex items-center justify-between text-xs">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/15 text-[11px] text-primary font-semibold">
+                <span class="material-symbols-outlined text-[14px]">trending_up</span> +4.2% vs yesterday
+              </span>
+              <span class="text-[11px] text-on-surface-variant">98% accuracy</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Recommended Meals -->
+          <div class="flex flex-col justify-between p-5 rounded-2xl bg-surface-container border border-surface-container-highest/20 shadow-sm hover:border-secondary/40 transition-colors">
+            <div class="flex items-start justify-between mb-2">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Recommended Meals</span>
+              <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center text-secondary">
+                <span class="material-symbols-outlined text-[20px]">skillet</span>
+              </div>
+            </div>
+            <div>
+              <div class="font-display font-extrabold text-2xl sm:text-3xl text-on-surface tracking-tight">
+                <span id="kpi-meals">405</span> <span class="text-sm font-normal text-on-surface-variant">plates</span>
+              </div>
+              <p class="text-xs text-on-surface-variant mt-1">Buffer calculated (-15 unconsumed baseline)</p>
+            </div>
+            <div class="mt-4 pt-2 border-t border-surface-container-highest/20 flex items-center justify-between text-xs">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary-container/40 text-[11px] text-secondary font-semibold">
+                <span class="material-symbols-outlined text-[14px]">auto_awesome</span> 96.4% uptake target
+              </span>
+              <span class="text-[11px] text-on-surface-variant">4 Batch split</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Predicted Waste -->
+          <div class="flex flex-col justify-between p-5 rounded-2xl bg-surface-container border border-surface-container-highest/20 shadow-sm hover:border-primary/40 transition-colors">
+            <div class="flex items-start justify-between mb-2">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Predicted Waste</span>
+              <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-[20px]">delete_sweep</span>
+              </div>
+            </div>
+            <div>
+              <div class="font-display font-extrabold text-2xl sm:text-3xl text-primary tracking-tight" id="kpi-waste-pct">
+                8.2%
+              </div>
+              <p class="text-xs text-on-surface-variant mt-1">Campus benchmark historical avg was 24.5%</p>
+            </div>
+            <div class="mt-4 pt-2 border-t border-surface-container-highest/20 flex items-center justify-between text-xs">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/15 text-[11px] text-primary font-semibold">
+                <span class="material-symbols-outlined text-[14px]">arrow_downward</span> 16.3% drop
+              </span>
+              <span class="text-[11px] text-on-surface-variant" id="kpi-food-cut">-18.5 kg cut</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Estimated Savings -->
+          <div class="flex flex-col justify-between p-5 rounded-2xl bg-surface-container border border-surface-container-highest/20 shadow-sm hover:border-tertiary/40 transition-colors">
+            <div class="flex items-start justify-between mb-2">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Estimated Savings</span>
+              <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center text-tertiary">
+                <span class="material-symbols-outlined text-[20px]">savings</span>
+              </div>
+            </div>
+            <div>
+              <div class="font-display font-extrabold text-2xl sm:text-3xl text-tertiary tracking-tight" id="kpi-savings">
+                ₹4,850
+              </div>
+              <p class="text-xs text-on-surface-variant mt-1">Direct daily raw ingredient cost saved</p>
+            </div>
+            <div class="mt-4 pt-2 border-t border-surface-container-highest/20 flex items-center justify-between text-xs">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-container/30 text-[11px] text-tertiary font-semibold">
+                <span class="material-symbols-outlined text-[14px]">workspace_premium</span> ₹34,200 this week
+              </span>
+              <span class="text-[11px] text-on-surface-variant">+12% target</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- MULTI-AGENT EXECUTION VISUALIZER (CLICK ANY NODE TO INSPECT REASONING) -->
+        <div class="p-5 rounded-2xl bg-surface-container-low border border-surface-container-highest/20 shadow-sm flex flex-col gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[22px]">account_tree</span>
+                <h2 class="font-display font-bold text-base text-on-surface">Autonomous Multi-Agent Pipeline Execution</h2>
+              </div>
+              <p class="text-xs text-on-surface-variant mt-0.5">
+                Click any agent card below to isolate its deep reasoning, objective loss function, and live Featherless AI analysis.
+              </p>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <button onclick="clearAgentFocus()" id="btn-show-all-agents" class="hidden text-xs px-3 py-1 rounded-lg bg-surface-container-high hover:bg-surface-bright text-on-surface transition-colors flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">visibility</span> Show All Agents
+              </button>
+              <span class="text-xs text-on-surface-variant font-mono">Latency: 140ms</span>
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary/10 text-xs text-primary font-semibold">
+                <span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+                Orchestrating Live
+              </span>
+            </div>
+          </div>
+
+          <!-- 6 AGENT CARDS GRID (INTERACTIVE) -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3" id="agent-nodes-grid">
+            
+            <!-- Node 1: Orchestrator Agent -->
+            <div onclick="selectAgent('Orchestrator Agent')" id="card-agent-Orchestrator" class="agent-card cursor-pointer flex flex-col justify-between p-3.5 rounded-xl bg-surface-container hover:bg-surface-container-high transition-all border border-surface-container-highest/20 hover:border-primary/50">
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-primary"></span>
+                  <span class="text-[11px] font-bold text-on-surface uppercase tracking-wider font-display">01. Orchestrator</span>
+                </div>
+                <span class="px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-semibold">Done</span>
+              </div>
+              <div class="my-1">
+                <p class="text-xs text-on-surface font-semibold">Context Ingestion</p>
+                <p class="text-[11px] text-on-surface-variant mt-1 leading-snug line-clamp-2" id="node-desc-orch">
+                  Ingested 420 campus attendance logs & academic timetable.
+                </p>
+              </div>
+              <div class="mt-2 pt-2 border-t border-surface-container-highest/20 flex items-center justify-between text-[10px]">
+                <span class="text-on-surface-variant">Conf: 99.8%</span>
+                <span class="text-primary flex items-center gap-0.5 font-medium">Inspect <span class="material-symbols-outlined text-[12px]">chevron_right</span></span>
+              </div>
+            </div>
+
+            <!-- Node 2: Demand Agent -->
+            <div onclick="selectAgent('Demand Agent')" id="card-agent-Demand" class="agent-card cursor-pointer flex flex-col justify-between p-3.5 rounded-xl bg-surface-container hover:bg-surface-container-high transition-all border border-surface-container-highest/20 hover:border-primary/50">
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-primary"></span>
+                  <span class="text-[11px] font-bold text-on-surface uppercase tracking-wider font-display">02. Demand AI</span>
+                </div>
+                <span class="px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-semibold">Done</span>
+              </div>
+              <div class="my-1">
+                <p class="text-xs text-on-surface font-semibold">Headcount Model</p>
+                <p class="text-[11px] text-on-surface-variant mt-1 leading-snug line-clamp-2" id="node-desc-demand">
+                  Forecasts 405 servings factoring sunny forecast & lab exams.
+                </p>
+              </div>
+              <div class="mt-2 pt-2 border-t border-surface-container-highest/20 flex items-center justify-between text-[10px]">
+                <span class="text-on-surface-variant">Conf: 96.4%</span>
+                <span class="text-primary flex items-center gap-0.5 font-medium">Inspect <span class="material-symbols-outlined text-[12px]">chevron_right</span></span>
+              </div>
+            </div>
+
+            <!-- Node 3: Inventory Agent -->
+            <div onclick="selectAgent('Inventory Agent')" id="card-agent-Inventory" class="agent-card cursor-pointer flex flex-col justify-between p-3.5 rounded-xl bg-surface-container hover:bg-surface-container-high transition-all border border-surface-container-highest/20 hover:border-secondary/50">
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-secondary"></span>
+                  <span class="text-[11px] font-bold text-secondary uppercase tracking-wider font-display">03. Inventory AI</span>
+                </div>
+                <span class="px-1.5 py-0.5 rounded-full bg-secondary-container text-secondary text-[10px] font-semibold">Ready</span>
+              </div>
+              <div class="my-1">
+                <p class="text-xs text-on-surface font-semibold">Perishables & FIFO</p>
+                <p class="text-[11px] text-on-surface-variant mt-1 leading-snug line-clamp-2" id="node-desc-inventory">
+                  Auditing shelf-life. 12 kg paneer tagged expiring in 14h.
+                </p>
+              </div>
+              <div class="mt-2 pt-2 border-t border-surface-container-highest/20 flex items-center justify-between text-[10px]">
+                <span class="text-secondary font-medium">Scanning lots</span>
+                <span class="text-secondary flex items-center gap-0.5 font-medium">Inspect <span class="material-symbols-outlined text-[12px]">chevron_right</span></span>
+              </div>
+            </div>
+
+            <!-- Node 4: Waste Agent -->
+            <div onclick="selectAgent('Waste Agent')" id="card-agent-Waste" class="agent-card cursor-pointer flex flex-col justify-between p-3.5 rounded-xl bg-surface-container hover:bg-surface-container-high transition-all border border-surface-container-highest/20 hover:border-primary/50">
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-primary"></span>
+                  <span class="text-[11px] font-bold text-on-surface uppercase tracking-wider font-display">04. Waste AI</span>
+                </div>
+                <span class="px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-semibold">Done</span>
+              </div>
+              <div class="my-1">
+                <p class="text-xs text-on-surface font-semibold">Scraping Profiler</p>
+                <p class="text-[11px] text-on-surface-variant mt-1 leading-snug line-clamp-2" id="node-desc-waste">
+                  Identified 32% historical plate discard on Thursday paneer curry.
+                </p>
+              </div>
+              <div class="mt-2 pt-2 border-t border-surface-container-highest/20 flex items-center justify-between text-[10px]">
+                <span class="text-tertiary">Risk Flagged</span>
+                <span class="text-primary flex items-center gap-0.5 font-medium">Inspect <span class="material-symbols-outlined text-[12px]">chevron_right</span></span>
+              </div>
+            </div>
+
+            <!-- Node 5: Cost Agent -->
+            <div onclick="selectAgent('Cost & ESG Agent')" id="card-agent-Cost" class="agent-card cursor-pointer flex flex-col justify-between p-3.5 rounded-xl bg-surface-container hover:bg-surface-container-high transition-all border border-surface-container-highest/20 hover:border-primary/50">
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-primary"></span>
+                  <span class="text-[11px] font-bold text-on-surface uppercase tracking-wider font-display">05. Cost AI</span>
+                </div>
+                <span class="px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-semibold">Done</span>
+              </div>
+              <div class="my-1">
+                <p class="text-xs text-on-surface font-semibold">Batch Yield Model</p>
+                <p class="text-[11px] text-on-surface-variant mt-1 leading-snug line-clamp-2" id="node-desc-cost">
+                  Calculated ₹4,850 direct savings by trimming production buffers.
+                </p>
+              </div>
+              <div class="mt-2 pt-2 border-t border-surface-container-highest/20 flex items-center justify-between text-[10px]">
+                <span class="text-on-surface-variant">₹ Savings</span>
+                <span class="text-primary flex items-center gap-0.5 font-medium">Inspect <span class="material-symbols-outlined text-[12px]">chevron_right</span></span>
+              </div>
+            </div>
+
+            <!-- Node 6: Action Agent -->
+            <div onclick="selectAgent('Action Agent')" id="card-agent-Action" class="agent-card cursor-pointer flex flex-col justify-between p-3.5 rounded-xl bg-surface-container hover:bg-surface-container-high transition-all border border-surface-container-highest/20 hover:border-tertiary/50">
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                  <span class="text-[11px] font-bold text-on-surface uppercase tracking-wider font-display">06. Action AI</span>
+                </div>
+                <span class="px-1.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[10px] font-semibold">Ready</span>
+              </div>
+              <div class="my-1">
+                <p class="text-xs text-on-surface font-semibold">Directives Ready</p>
+                <p class="text-[11px] text-on-surface-variant mt-1 leading-snug line-clamp-2" id="node-desc-action">
+                  3 batch orders generated with automated NGO surplus contingency.
+                </p>
+              </div>
+              <div class="mt-2 pt-2 border-t border-surface-container-highest/20 flex items-center justify-between text-[10px]">
+                <span class="text-primary font-medium">Directive #884</span>
+                <span class="text-tertiary flex items-center gap-0.5 font-medium">Inspect <span class="material-symbols-outlined text-[12px]">chevron_right</span></span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- DEDICATED AGENT DEEP-DIVE & REASONING ANALYSIS SECTION (EXPANDS WHEN AGENT IS SELECTED) -->
+          <div id="agent-deepdive-section" class="hidden bg-surface-container-highest/30 border border-primary/40 rounded-2xl p-5 space-y-4 shadow-lg animate-fade-in">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-surface-container-highest/40">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center text-primary" id="deepdive-agent-icon">
+                  <span class="material-symbols-outlined text-[24px]">psychology</span>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <h3 class="font-display font-bold text-base text-on-surface" id="deepdive-agent-name">Agent Name</h3>
+                    <span class="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold uppercase tracking-wider" id="deepdive-agent-role">Role</span>
+                  </div>
+                  <p class="text-xs text-on-surface-variant font-mono mt-0.5" id="deepdive-agent-headline">Headline summary</p>
+                </div>
+              </div>
+
+              <!-- Clear Focus Action Button -->
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-cyan-300 font-mono hidden md:inline" id="deepdive-llm-tag">Source: Featherless.ai</span>
+                <button onclick="clearAgentFocus()" class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-on-surface text-xs font-semibold flex items-center gap-1.5 transition-colors">
+                  <span class="material-symbols-outlined text-[16px]">close</span>
+                  Clear Selection & Return to Dashboard
+                </button>
+              </div>
+            </div>
+
+            <!-- Deep Dive Content Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+              
+              <!-- Left Column: LLM Reasoning & Analysis (7 Cols) -->
+              <div class="lg:col-span-7 space-y-3">
+                
+                <!-- Objective Function / Loss Metric -->
+                <div class="bg-surface-container-low p-3.5 rounded-xl border border-surface-container-highest/30">
+                  <div class="flex items-center justify-between text-xs text-on-surface-variant mb-1 font-mono">
+                    <span class="uppercase tracking-wider font-semibold text-[10px] text-tertiary">Agent Objective & Loss Metric</span>
+                    <span>Mathematical Guardrail</span>
+                  </div>
+                  <div class="font-mono text-xs text-primary font-semibold" id="deepdive-loss-function">
+                    Loss Function definition
+                  </div>
+                </div>
+
+                <!-- Deep Analytical Reasoning (Powered by Featherless) -->
+                <div class="bg-surface-container-low p-4 rounded-xl border border-surface-container-highest/30 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-bold text-on-surface uppercase tracking-wider font-display flex items-center gap-1.5">
+                      <span class="material-symbols-outlined text-[16px] text-primary">psychology</span>
+                      Live Analytical Reasoning & Chain-of-Thought
+                    </span>
+                    <span class="text-[10px] font-mono text-on-surface-variant" id="deepdive-confidence">Confidence: 98.4%</span>
+                  </div>
+                  <p class="text-xs sm:text-sm text-on-surface leading-relaxed font-sans" id="deepdive-reasoning-text">
+                    Detailed multi-paragraph reasoning text loading...
+                  </p>
+                </div>
+
+              </div>
+
+              <!-- Right Column: Ingested Telemetry & Proposals (5 Cols) -->
+              <div class="lg:col-span-5 space-y-3">
+                
+                <!-- Telemetry Inputs Ingested -->
+                <div class="bg-surface-container-low p-3.5 rounded-xl border border-surface-container-highest/30">
+                  <span class="text-[11px] font-bold text-on-surface uppercase tracking-wider font-display mb-2 block flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px] text-secondary">input</span>
+                    Telemetry Inputs Ingested
+                  </span>
+                  <div class="flex flex-col gap-1.5" id="deepdive-inputs-list">
+                    <!-- Dynamic inputs -->
+                  </div>
+                </div>
+
+                <!-- Specific Proposals / Metrics -->
+                <div class="bg-surface-container-low p-3.5 rounded-xl border border-surface-container-highest/30">
+                  <span class="text-[11px] font-bold text-on-surface uppercase tracking-wider font-display mb-2 block flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px] text-tertiary">tune</span>
+                    Agent Recommendations & Decision Matrix
+                  </span>
+                  <div class="space-y-1.5" id="deepdive-recommendations-list">
+                    <!-- Dynamic recommendations -->
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- TWO-COLUMN OPERATIONAL GRID -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+          <!-- LEFT COLUMN (7 COLS): PRODUCTION PLAN & WHAT-IF SIMULATOR -->
+          <div class="lg:col-span-7 flex flex-col gap-6">
+
+            <!-- SECTION A: DAILY KITCHEN PRODUCTION PLAN -->
+            <div id="production-plan" class="p-5 rounded-2xl bg-surface-container border border-surface-container-highest/20 shadow-sm flex flex-col gap-4">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h3 class="font-display font-bold text-base text-on-surface">Daily Kitchen Production Plan</h3>
+                  <p class="text-xs text-on-surface-variant">Recommended lunch prep batches for target headcount</p>
+                </div>
+                <span class="self-start sm:self-auto px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
+                  AI Model v4.3 Active
+                </span>
+              </div>
+
+              <!-- Table Container -->
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="bg-surface-container-low text-on-surface-variant text-[11px] font-bold uppercase tracking-wider">
+                      <th class="py-2.5 px-3 rounded-l-xl">Food Item</th>
+                      <th class="py-2.5 px-3">Historical Avg</th>
+                      <th class="py-2.5 px-3">AI Recommendation</th>
+                      <th class="py-2.5 px-3">Change</th>
+                      <th class="py-2.5 px-3">Risk Factor</th>
+                      <th class="py-2.5 px-3 rounded-r-xl text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="production-table-body" class="divide-y divide-surface-container-highest/20 text-xs text-on-surface">
+                    <!-- Dynamic Recipe rows rendered by app.js -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Footer Action Strip Inside Card -->
+              <div class="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-xl bg-surface-container-low border border-surface-container-highest/20">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+                  <span class="text-xs text-on-surface font-medium">Confidence Score: <strong class="text-primary font-bold">98.2%</strong> based on 14 semester cycles</span>
+                </div>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                  <button onclick="openConfigModal()" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-on-surface text-xs font-medium transition-colors" type="button">
+                    Customize
+                  </button>
+                  <button onclick="acceptProductionPlan()" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg bg-primary hover:bg-primary-fixed text-on-primary text-xs font-bold transition-all shadow-sm" type="button">
+                    Accept Recommendation
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION B: WHAT-IF? REAL-TIME DEMAND SIMULATOR -->
+            <div class="p-5 rounded-2xl bg-surface-container border border-surface-container-highest/20 shadow-sm flex flex-col gap-4">
+              <div class="flex items-start justify-between">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary text-[20px]">tune</span>
+                    <h3 class="font-display font-bold text-base text-on-surface">What-If? Real-Time Demand Simulator</h3>
+                  </div>
+                  <p class="text-xs text-on-surface-variant mt-0.5">
+                    Adjust expected footfall to preview immediate downstream AI recalculations across all agents
+                  </p>
+                </div>
+                <span class="px-2.5 py-1 rounded-full bg-secondary-container/40 text-secondary text-[11px] font-medium">
+                  Dynamic Agent Simulator
+                </span>
+              </div>
+
+              <!-- Slider Section -->
+              <div class="flex flex-col gap-2 p-4 rounded-xl bg-surface-container-low border border-surface-container-highest/20">
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Simulate Footfall</span>
+                  <span class="px-2.5 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-bold" id="simulator-pill">
+                    420 students selected
+                  </span>
+                </div>
+                
+                <!-- Range slider input -->
+                <div class="py-2">
+                  <input class="w-full accent-primary bg-surface-container-highest h-2 rounded-lg cursor-pointer" id="footfall-slider" max="800" min="250" step="25" type="range" value="420" oninput="handleFootfallSlider(this.value)" />
+                  <div class="flex justify-between text-[11px] text-on-surface-variant mt-1.5 font-mono">
+                    <span class="cursor-pointer hover:text-primary" onclick="setFootfallQuick(280)">280 (Rain)</span>
+                    <span class="cursor-pointer hover:text-primary" onclick="setFootfallQuick(420)">420 (Normal)</span>
+                    <span class="cursor-pointer hover:text-primary" onclick="setFootfallQuick(600)">600 (Midweek)</span>
+                    <span class="cursor-pointer hover:text-primary" onclick="setFootfallQuick(780)">780 (Campus Fest)</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dynamic Response Matrix -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="p-3.5 rounded-xl bg-surface-container-low border border-surface-container-highest/20 flex flex-col gap-1">
+                  <span class="text-[11px] text-on-surface-variant font-medium">Recommended Meals</span>
+                  <span class="font-display font-bold text-lg text-on-surface" id="sim-meals">405 plates</span>
+                  <span class="text-[10px] text-primary" id="sim-meals-change">-15 plate buffer</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-surface-container-low border border-surface-container-highest/20 flex flex-col gap-1">
+                  <span class="text-[11px] text-on-surface-variant font-medium">Expected Waste</span>
+                  <span class="font-display font-bold text-lg text-primary" id="sim-waste">8.2%</span>
+                  <span class="text-[10px] text-on-surface-variant">-16.3% vs benchmark</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-surface-container-low border border-surface-container-highest/20 flex flex-col gap-1">
+                  <span class="text-[11px] text-on-surface-variant font-medium">Estimated Savings</span>
+                  <span class="font-display font-bold text-lg text-tertiary" id="sim-savings">₹4,850</span>
+                  <span class="text-[10px] text-tertiary font-medium">Optimized portioning</span>
+                </div>
+              </div>
+
+              <!-- Simulator CTA -->
+              <div class="flex items-center justify-between pt-1">
+                <span class="text-xs text-on-surface-variant italic" id="sim-status-toast">
+                  Slide to adjust & test agent responses
+                </span>
+                <button onclick="triggerRecalculate()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-container-high hover:bg-surface-bright text-on-surface text-xs font-semibold transition-all border border-surface-container-highest/30" id="btn-recalculate" type="button">
+                  <span class="material-symbols-outlined text-[16px] text-primary">restart_alt</span>
+                  Recalculate with Featherless AI
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- RIGHT COLUMN (5 COLS): WASTE ANALYTICS, INVENTORY, & SURPLUS HUB -->
+          <div class="lg:col-span-5 flex flex-col gap-6">
+
+            <!-- SECTION C: WASTE ANALYTICS (7-DAY) -->
+            <div class="p-5 rounded-2xl bg-surface-container border border-surface-container-highest/20 shadow-sm flex flex-col gap-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="font-display font-bold text-base text-on-surface">Waste Analytics (7-Day)</h3>
+                  <p class="text-xs text-on-surface-variant">Measured scrapings & prep trimmings</p>
+                </div>
+                <button onclick="selectAgent('Waste Agent')" class="w-8 h-8 rounded-lg bg-surface-container-high hover:bg-surface-bright flex items-center justify-center text-primary" title="Inspect Waste Agent">
+                  <span class="material-symbols-outlined text-[18px]">analytics</span>
+                </button>
+              </div>
+
+              <!-- Visual Highlight -->
+              <div class="p-4 rounded-xl bg-surface-container-low border border-surface-container-highest/20 flex items-center justify-between">
+                <div class="flex flex-col">
+                  <span class="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Waste Diverted This Week</span>
+                  <span class="font-display font-extrabold text-2xl text-primary mt-0.5" id="waste-diverted-kg">18.5 kg</span>
+                  <span class="text-xs text-on-surface-variant">Equivalent to ~39 student meals</span>
+                </div>
+                <!-- Progress Ring -->
+                <div class="w-16 h-16 relative flex items-center justify-center">
+                  <svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+                    <path class="text-surface-container-highest" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+                    <path class="text-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="78, 100" stroke-linecap="round" stroke-width="3.5"></path>
+                  </svg>
+                  <span class="absolute text-xs font-bold text-on-surface">78%</span>
+                </div>
+              </div>
+
+              <!-- Categorical Breakdown Progress Bars -->
+              <div class="flex flex-col gap-2.5">
+                <div class="flex flex-col gap-1">
+                  <div class="flex justify-between text-xs">
+                    <span class="text-on-surface">Plate Scraping Waste</span>
+                    <span class="text-on-surface-variant font-medium">4.8 kg (55%)</span>
+                  </div>
+                  <div class="w-full h-2 rounded-full bg-surface-container-low overflow-hidden">
+                    <div class="h-full rounded-full bg-tertiary" style="width: 55%"></div>
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                  <div class="flex justify-between text-xs">
+                    <span class="text-on-surface">Preparation Trimmings</span>
+                    <span class="text-on-surface-variant font-medium">2.1 kg (25%)</span>
+                  </div>
+                  <div class="w-full h-2 rounded-full bg-surface-container-low overflow-hidden">
+                    <div class="h-full rounded-full bg-primary" style="width: 25%"></div>
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                  <div class="flex justify-between text-xs">
+                    <span class="text-on-surface">Spoilage / Storage Discard</span>
+                    <span class="text-on-surface-variant font-medium">1.3 kg (10%)</span>
+                  </div>
+                  <div class="w-full h-2 rounded-full bg-surface-container-low overflow-hidden">
+                    <div class="h-full rounded-full bg-error" style="width: 15%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- High-Risk Alert Box -->
+              <div id="waste-risk-alert-container">
+                <div class="p-3.5 rounded-xl bg-tertiary-container/15 border border-tertiary/30 flex items-start gap-3">
+                  <span class="material-symbols-outlined text-tertiary text-[20px] shrink-0 mt-0.5">warning</span>
+                  <div class="flex flex-col">
+                    <span class="text-xs font-bold text-tertiary">Monitoring High Scrap Items</span>
+                    <p class="text-xs text-on-surface-variant mt-0.5 leading-snug">
+                      Auditing historical scrap return records from user dataset...
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION D: INVENTORY EXPIRY ALERTS -->
+            <div class="p-5 rounded-2xl bg-surface-container border border-surface-container-highest/20 shadow-sm flex flex-col gap-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="font-display font-bold text-base text-on-surface">Storage & Expiry Monitor</h3>
+                  <p class="text-xs text-on-surface-variant">Prioritized by shelf-life FIFO queue</p>
+                </div>
+                <button onclick="selectAgent('Inventory Agent')" class="w-8 h-8 rounded-lg bg-surface-container-high hover:bg-surface-bright flex items-center justify-center text-on-surface-variant" title="Inspect Inventory Agent">
+                  <span class="material-symbols-outlined text-[18px]">inventory_2</span>
+                </button>
+              </div>
+
+              <div class="flex flex-col gap-2" id="inventory-items-container">
+                <!-- Expiry Item 1: Paneer (Urgent) -->
+                <div class="flex items-center justify-between p-3 rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors border border-surface-container-highest/10">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-2 h-2 rounded-full bg-error animate-ping"></span>
+                    <div class="flex flex-col">
+                      <span class="text-xs font-semibold text-on-surface">Fresh Artisanal Paneer (Chiller #1)</span>
+                      <span class="text-[11px] text-on-surface-variant">12 kg batch • Expires in 14.0 hrs</span>
+                    </div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded-full bg-error/20 text-error text-[10px] font-bold">
+                    Expiring Today
+                  </span>
+                </div>
+
+                <!-- Expiry Item 2: Heavy Cream -->
+                <div class="flex items-center justify-between p-3 rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors border border-surface-container-highest/10">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                    <div class="flex flex-col">
+                      <span class="text-xs font-semibold text-on-surface">Heavy Dairy Cream (Chiller #1)</span>
+                      <span class="text-[11px] text-on-surface-variant">22 kg • Expires in 21.0 hrs</span>
+                    </div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded-full bg-tertiary-container/30 text-tertiary text-[10px] font-bold">
+                    Expiring Tomorrow
+                  </span>
+                </div>
+
+                <!-- Expiry Item 3: Basmati Rice -->
+                <div class="flex items-center justify-between p-3 rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors border border-surface-container-highest/10">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-2 h-2 rounded-full bg-primary"></span>
+                    <div class="flex flex-col">
+                      <span class="text-xs font-medium text-on-surface">Aged Basmati Rice (Dry Silo B)</span>
+                      <span class="text-[11px] text-on-surface-variant">180 kg in stock • Dry Shelf 02</span>
+                    </div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded-full bg-primary/15 text-primary text-[10px] font-medium">
+                    Sufficient (30d)
+                  </span>
+                </div>
+
+                <!-- Expiry Item 4: Toor Dal -->
+                <div class="flex items-center justify-between p-3 rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors border border-surface-container-highest/10">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-2 h-2 rounded-full bg-primary"></span>
+                    <div class="flex flex-col">
+                      <span class="text-xs font-medium text-on-surface">Yellow Lentils (Toor Dal Silo)</span>
+                      <span class="text-[11px] text-on-surface-variant">95 kg in stock • Dry Shelf 04</span>
+                    </div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded-full bg-primary/15 text-primary text-[10px] font-medium">
+                    Sufficient (25d)
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION E: SURPLUS FOOD REDISTRIBUTION HUB -->
+            <div id="surplus-section" class="p-5 rounded-2xl bg-surface-container border border-surface-container-highest/20 shadow-sm flex flex-col gap-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="font-display font-bold text-base text-on-surface">Surplus Redistribution</h3>
+                  <p class="text-xs text-on-surface-variant">Automated routing for excess prep batches</p>
+                </div>
+                <span class="material-symbols-outlined text-primary text-[20px]">volunteer_activism</span>
+              </div>
+
+              <div class="p-3.5 rounded-xl bg-surface-container-low border border-surface-container-highest/20 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <span class="material-symbols-outlined text-primary text-[22px]">schedule</span>
+                  <div class="flex flex-col">
+                    <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Predicted Surplus</span>
+                    <span class="font-display font-bold text-lg text-on-surface" id="surplus-portions-count">32 meals</span>
+                  </div>
+                </div>
+                <span class="text-[11px] px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface font-medium border border-surface-container-highest/30">
+                  Window: Post 2:30 PM
+                </span>
+              </div>
+
+              <!-- 4 Actionable Destination Options -->
+              <div class="grid grid-cols-2 gap-2.5">
+                <label class="flex flex-col gap-1 p-3 rounded-xl bg-surface-container-low hover:bg-surface-container-high cursor-pointer transition-colors relative border border-surface-container-highest/20">
+                  <input checked name="redistribution_route" type="radio" value="ngo" class="absolute top-3 right-3 accent-primary" />
+                  <div class="flex items-center gap-1.5 text-primary font-semibold text-xs">
+                    <span class="material-symbols-outlined text-[16px]">handshake</span>
+                    Notify NGO
+                  </div>
+                  <p class="text-[11px] text-on-surface-variant leading-tight mt-0.5">
+                    Annapurna Relief (2.4 km • 15 min dispatch)
+                  </p>
+                </label>
+
+                <label class="flex flex-col gap-1 p-3 rounded-xl bg-surface-container-low hover:bg-surface-container-high cursor-pointer transition-colors relative border border-surface-container-highest/20">
+                  <input name="redistribution_route" type="radio" value="hostel" class="absolute top-3 right-3 accent-primary" />
+                  <div class="flex items-center gap-1.5 text-on-surface font-semibold text-xs">
+                    <span class="material-symbols-outlined text-[16px]">apartment</span>
+                    Hostel Buffets
+                  </div>
+                  <p class="text-[11px] text-on-surface-variant leading-tight mt-0.5">
+                    Block D Boys Hostel study night buffet
+                  </p>
+                </label>
+
+                <label class="flex flex-col gap-1 p-3 rounded-xl bg-surface-container-low hover:bg-surface-container-high cursor-pointer transition-colors relative border border-surface-container-highest/20">
+                  <input name="redistribution_route" type="radio" value="flash" class="absolute top-3 right-3 accent-primary" />
+                  <div class="flex items-center gap-1.5 text-on-surface font-semibold text-xs">
+                    <span class="material-symbols-outlined text-[16px]">sell</span>
+                    Flash Discount
+                  </div>
+                  <p class="text-[11px] text-on-surface-variant leading-tight mt-0.5">
+                    ₹20 express student meals post 2:45 PM
+                  </p>
+                </label>
+
+                <label class="flex flex-col gap-1 p-3 rounded-xl bg-surface-container-low hover:bg-surface-container-high cursor-pointer transition-colors relative border border-surface-container-highest/20">
+                  <input name="redistribution_route" type="radio" value="compost" class="absolute top-3 right-3 accent-primary" />
+                  <div class="flex items-center gap-1.5 text-on-surface font-semibold text-xs">
+                    <span class="material-symbols-outlined text-[16px]">compost</span>
+                    Bio-Compost
+                  </div>
+                  <p class="text-[11px] text-on-surface-variant leading-tight mt-0.5">
+                    Campus garden anaerobic digester node
+                  </p>
+                </label>
+              </div>
+
+              <button onclick="triggerRedistribution()" class="w-full py-3 rounded-xl bg-primary hover:bg-primary-fixed text-on-primary font-bold text-xs transition-all shadow-[0_0_16px_rgba(78,222,163,0.2)] flex items-center justify-center gap-2 active:scale-98" id="btn-trigger-redistribution" type="button">
+                <span class="material-symbols-outlined text-[18px]">send</span>
+                Trigger Redistribution Plan
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- BOTTOM FULL-WIDTH AI DIRECTIVE / ACTION AGENT PANEL -->
+        <div class="p-5 rounded-2xl bg-surface-container-low border border-surface-container-highest/20 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div class="flex items-start gap-4 max-w-4xl">
+            <div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shrink-0">
+              <span class="material-symbols-outlined text-[28px]">smart_toy</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold uppercase tracking-wider">
+                  Action Agent Autonomous Directive #884
+                </span>
+                <span class="text-xs text-on-surface-variant">Generated 3 mins ago • Consensus: 6/6 Agents</span>
+              </div>
+              <p class="text-sm text-on-surface font-medium leading-relaxed" id="bottom-directive-text">
+                “Reduce paneer curry preparation by 10 kg and rice preparation by 15 kg. Redirect expiring paneer (12 kg) to today’s dinner batch. If surplus exceeds 30 meals, trigger redistribution at 3:00 PM.”
+              </p>
+              <div class="flex flex-wrap items-center gap-4 mt-1 text-on-surface-variant text-xs font-mono">
+                <span class="flex items-center gap-1 text-primary">
+                  <span class="material-symbols-outlined text-[14px]">payments</span> Saves ₹4,850
+                </span>
+                <span>•</span>
+                <span class="flex items-center gap-1 text-primary">
+                  <span class="material-symbols-outlined text-[14px]">eco</span> Prevents 46.2 kg CO₂e
+                </span>
+                <span>•</span>
+                <span class="flex items-center gap-1 text-tertiary">
+                  <span class="material-symbols-outlined text-[14px]">check_circle</span> Eliminates urgent spoilage risk
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-wrap md:flex-col lg:flex-row items-center gap-2 w-full md:w-auto shrink-0">
+            <button onclick="acceptProductionPlan()" class="flex-1 md:flex-none px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-fixed text-on-primary font-bold text-xs transition-all shadow-[0_0_16px_rgba(78,222,163,0.3)] flex items-center justify-center gap-1.5" id="btn-accept-plan" type="button">
+              <span class="material-symbols-outlined text-[18px]">done_all</span>
+              Accept Plan
+            </button>
+            <button onclick="selectAgent('Action Agent')" class="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-bright text-on-surface text-xs font-semibold transition-all flex items-center justify-center gap-1.5" type="button">
+              View Directives
+            </button>
+            <button onclick="selectAgent('Orchestrator Agent')" class="px-3 py-2.5 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface text-xs transition-all flex items-center justify-center gap-1" type="button">
+              Agent Logs <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- FEATHERLESS CONFIGURATION MODAL -->
+  <div id="config-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface-container border border-surface-container-highest/40 rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl animate-fade-in">
+      
+      <div class="flex items-center justify-between pb-3 border-b border-surface-container-highest/30">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-tertiary/20 text-tertiary flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]">key</span>
+          </div>
+          <div>
+            <h3 class="font-display font-bold text-base text-on-surface">Featherless.ai Configuration</h3>
+            <p class="text-[11px] text-on-surface-variant font-mono">Serverless Open-Source Multi-Agent Inference</p>
+          </div>
+        </div>
+        <button onclick="closeConfigModal()" class="text-on-surface-variant hover:text-on-surface">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs font-sans">
+        
+        <!-- Status indicator -->
+        <div id="modal-status-banner" class="p-3 rounded-xl bg-surface-container-low border border-surface-container-highest/30 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-tertiary" id="modal-status-dot"></span>
+            <span class="font-mono text-on-surface" id="modal-status-msg">Status: Checking credentials...</span>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-mono" id="modal-current-model">Llama 3.1 8B</span>
+        </div>
+
+        <!-- API Key Input -->
+        <div class="space-y-1.5">
+          <label class="font-semibold text-on-surface flex items-center justify-between">
+            <span>Featherless API Key</span>
+            <a href="https://featherless.ai" target="_blank" class="text-primary hover:underline text-[11px] flex items-center gap-0.5">
+              Get Key at featherless.ai <span class="material-symbols-outlined text-[12px]">open_in_new</span>
+            </a>
+          </label>
+          <input 
+            type="password" 
+            id="featherless-api-key-input" 
+            placeholder="fl_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" 
+            class="w-full px-3.5 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-highest/40 text-on-surface font-mono text-xs focus:outline-none focus:border-primary transition-colors"
+          />
+          <p class="text-[11px] text-on-surface-variant">
+            Your key is used to generate live chain-of-thought analysis for each of the 6 kitchen agents.
+          </p>
+        </div>
+
+        <!-- Model Selection Dropdown -->
+        <div class="space-y-1.5">
+          <label class="font-semibold text-on-surface">Featherless LLM Model</label>
+          <select id="featherless-model-select" class="w-full px-3.5 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-highest/40 text-on-surface font-mono text-xs focus:outline-none focus:border-primary transition-colors">
+            <option value="meta-llama/Meta-Llama-3.1-8B-Instruct">meta-llama/Meta-Llama-3.1-8B-Instruct (Recommended / Ultra-Fast)</option>
+            <option value="mistralai/Mistral-7B-Instruct-v0.3">mistralai/Mistral-7B-Instruct-v0.3 (High Precision Reasoning)</option>
+            <option value="Qwen/Qwen2.5-7B-Instruct">Qwen/Qwen2.5-7B-Instruct (Balanced Multilingual)</option>
+            <option value="meta-llama/Meta-Llama-3.1-70B-Instruct">meta-llama/Meta-Llama-3.1-70B-Instruct (Enterprise Deep Reasoning)</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- Footer Buttons -->
+      <div class="flex items-center justify-between pt-2 border-t border-surface-container-highest/30">
+        <button onclick="testFeatherlessKey()" class="px-4 py-2 rounded-xl bg-surface-container-high hover:bg-surface-bright text-tertiary text-xs font-semibold flex items-center gap-1.5 transition-colors" id="btn-test-key">
+          <span class="material-symbols-outlined text-[16px]">network_check</span>
+          Test Connection
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="closeConfigModal()" class="px-4 py-2 rounded-xl bg-surface-container-high hover:bg-surface-bright text-on-surface text-xs font-medium transition-colors">
+            Cancel
+          </button>
+          <button onclick="saveFeatherlessConfig()" class="px-4 py-2 rounded-xl bg-primary hover:bg-primary-fixed text-on-primary text-xs font-bold transition-all shadow-sm" id="btn-save-key">
+            Save & Run Analysis
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- USER DATASET MANAGER MODAL -->
+  <div id="dataset-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface-container border border-surface-container-highest/40 rounded-2xl max-w-3xl w-full p-6 space-y-5 shadow-2xl animate-fade-in max-h-[90vh] flex flex-col">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-3 border-b border-surface-container-highest/30 shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-secondary/20 text-secondary flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]">folder_open</span>
+          </div>
+          <div>
+            <h3 class="font-display font-bold text-base text-on-surface">User-Provided Dataset Manager</h3>
+            <p class="text-[11px] text-on-surface-variant font-mono">Files stored in <span class="text-primary">food-waste-management/data/</span> used by all AI agents</p>
+          </div>
+        </div>
+        <button onclick="closeDatasetModal()" class="text-on-surface-variant hover:text-on-surface">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <!-- Dataset Tab Navigation -->
+      <div class="flex items-center gap-2 border-b border-surface-container-highest/30 pb-2 shrink-0 text-xs">
+        <button onclick="switchDatasetTab('recipes')" id="tab-btn-recipes" class="px-3 py-1.5 rounded-lg bg-secondary text-on-secondary font-semibold transition-colors flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">restaurant_menu</span>
+          Recipes (<span id="count-badge-recipes">0</span>)
+        </button>
+        <button onclick="switchDatasetTab('inventory')" id="tab-btn-inventory" class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-on-surface-variant font-medium transition-colors flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">inventory_2</span>
+          Inventory Stock (<span id="count-badge-inventory">0</span>)
+        </button>
+        <button onclick="switchDatasetTab('waste')" id="tab-btn-waste" class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-on-surface-variant font-medium transition-colors flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">delete_sweep</span>
+          Waste Logs (<span id="count-badge-waste">0</span>)
+        </button>
+        <button onclick="switchDatasetTab('raw')" id="tab-btn-raw" class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-on-surface-variant font-medium transition-colors flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">edit_note</span>
+          Edit / Paste JSON
+        </button>
+      </div>
+
+      <!-- Tab Contents (Scrollable) -->
+      <div class="overflow-y-auto flex-1 space-y-3 pr-1 text-xs">
+        
+        <!-- Tab 1: Recipes Table -->
+        <div id="dataset-tab-recipes" class="space-y-2">
+          <div class="overflow-x-auto rounded-xl border border-surface-container-highest/30">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead class="bg-surface-container-low text-on-surface-variant uppercase text-[10px] font-bold">
+                <tr>
+                  <th class="p-2.5">Dish Name</th>
+                  <th class="p-2.5">Category</th>
+                  <th class="p-2.5">Default Portions</th>
+                  <th class="p-2.5">Weight (g)</th>
+                  <th class="p-2.5">Unit Cost</th>
+                </tr>
+              </thead>
+              <tbody id="modal-recipes-tbody" class="divide-y divide-surface-container-highest/20 text-on-surface">
+                <!-- Dynamic user recipes -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 2: Inventory Table -->
+        <div id="dataset-tab-inventory" class="hidden space-y-2">
+          <div class="overflow-x-auto rounded-xl border border-surface-container-highest/30">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead class="bg-surface-container-low text-on-surface-variant uppercase text-[10px] font-bold">
+                <tr>
+                  <th class="p-2.5">Ingredient Name</th>
+                  <th class="p-2.5">Stock on Hand</th>
+                  <th class="p-2.5">Shelf Life Remaining</th>
+                  <th class="p-2.5">Storage Location</th>
+                  <th class="p-2.5">Batch Code</th>
+                </tr>
+              </thead>
+              <tbody id="modal-inventory-tbody" class="divide-y divide-surface-container-highest/20 text-on-surface">
+                <!-- Dynamic user inventory -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 3: Waste Logs Table -->
+        <div id="dataset-tab-waste" class="hidden space-y-2">
+          <div class="overflow-x-auto rounded-xl border border-surface-container-highest/30">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead class="bg-surface-container-low text-on-surface-variant uppercase text-[10px] font-bold">
+                <tr>
+                  <th class="p-2.5">Dish / Recipe</th>
+                  <th class="p-2.5">Avg Scrap Rate</th>
+                  <th class="p-2.5">Tray Return Scrap (g)</th>
+                  <th class="p-2.5">Risk Tier</th>
+                  <th class="p-2.5">Historical Notes</th>
+                </tr>
+              </thead>
+              <tbody id="modal-waste-tbody" class="divide-y divide-surface-container-highest/20 text-on-surface">
+                <!-- Dynamic user scrap logs -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 4: Raw JSON Editor -->
+        <div id="dataset-tab-raw" class="hidden space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-on-surface-variant">Select File to Edit or Update:</span>
+            <select id="raw-dataset-selector" onchange="loadRawDatasetContent(this.value)" class="px-2.5 py-1 rounded bg-surface-container-low border border-surface-container-highest/40 text-on-surface font-mono text-xs">
+              <option value="recipes">recipes.json</option>
+              <option value="inventory">inventory.json</option>
+              <option value="waste_logs">waste_logs.json</option>
+            </select>
+          </div>
+          <textarea id="raw-dataset-editor" rows="12" class="w-full p-3 rounded-xl bg-surface-container-low border border-surface-container-highest/40 text-on-surface font-mono text-xs focus:outline-none focus:border-secondary transition-colors"></textarea>
+          <div class="flex justify-end">
+            <button onclick="saveRawDataset()" class="px-4 py-2 rounded-xl bg-secondary text-on-secondary font-bold text-xs shadow-sm hover:opacity-90 transition-opacity">
+              Save & Apply To All Agents
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-between pt-3 border-t border-surface-container-highest/30 shrink-0">
+        <button onclick="reloadDatasetFiles()" class="px-4 py-2 rounded-xl bg-surface-container-high hover:bg-surface-bright text-primary text-xs font-semibold flex items-center gap-1.5 transition-colors">
+          <span class="material-symbols-outlined text-[16px]">sync</span>
+          Reload Files From Disk
+        </button>
+        <button onclick="closeDatasetModal()" class="px-4 py-2 rounded-xl bg-surface-container-high hover:bg-surface-bright text-on-surface text-xs font-medium transition-colors">
+          Done
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SUCCESS TOAST NOTIFICATION -->
+  <div id="toast-notification" class="fixed bottom-5 right-5 bg-surface-container-high border border-primary/40 text-on-surface px-4 py-3 rounded-xl shadow-xl z-50 hidden flex items-center gap-2.5 animate-fade-in font-sans text-xs">
+    <span class="material-symbols-outlined text-primary text-[20px]" id="toast-icon">check_circle</span>
+    <span id="toast-message">Operation successful</span>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+[
+  {
+    "recipe_id": "rec_paneer_makhani",
+    "dish_name": "Royal Paneer Makhani",
+    "category": "Curry / High Perishable",
+    "default_portions": 320,
+    "portion_size_g": 240,
+    "unit_portion_cost": 2.45,
+    "ingredients_per_portion": {
+      "ing_paneer": 0.09,
+      "ing_cream": 0.04
+    },
+    "prep_difficulty": "MEDIUM",
+    "cooking_lead_time_mins": 45
+  },
+  {
+    "recipe_id": "rec_palak_paneer",
+    "dish_name": "Velvet Palak Paneer",
+    "category": "Specialty Greens",
+    "default_portions": 240,
+    "portion_size_g": 220,
+    "unit_portion_cost": 2.15,
+    "ingredients_per_portion": {
+      "ing_paneer": 0.07,
+      "ing_spinach": 0.11,
+      "ing_cream": 0.02
+    },
+    "prep_difficulty": "MEDIUM",
+    "cooking_lead_time_mins": 35
+  },
+  {
+    "recipe_id": "rec_chicken_biryani",
+    "dish_name": "Hyderabadi Dum Chicken Biryani",
+    "category": "Signature Main",
+    "default_portions": 450,
+    "portion_size_g": 380,
+    "unit_portion_cost": 2.90,
+    "ingredients_per_portion": {
+      "ing_rice": 0.16,
+      "ing_chicken": 0.14
+    },
+    "prep_difficulty": "HIGH",
+    "cooking_lead_time_mins": 75
+  },
+  {
+    "recipe_id": "rec_dal_tadka",
+    "dish_name": "Slow-Simmered Dal Tadka",
+    "category": "Daily Staple",
+    "default_portions": 400,
+    "portion_size_g": 200,
+    "unit_portion_cost": 0.85,
+    "ingredients_per_portion": {
+      "ing_dal": 0.08
+    },
+    "prep_difficulty": "LOW",
+    "cooking_lead_time_mins": 30
+  }
+]
